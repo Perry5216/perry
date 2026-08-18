@@ -11,7 +11,7 @@ A hiring-manager summary of what changed and why. Details in the [README](../REA
 **Learned:** The platform idea was right. One coordinator + one database does not stay the source of truth. Learning that is not forced into the next model call is optional. Cost-model (subscriptions) leaked into architecture.
 
 **Repo:** https://github.com/Perry5216/perry-system  
-That repository is **not** overwritten by v2.
+That repository is **not** overwritten by v2. The public v2 map is https://github.com/Perry5216/perry .
 
 ## v2 — this repo (public map of the private runtime)
 

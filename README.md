@@ -10,7 +10,7 @@ This repo does **not** replace it.
 | Version | Repo | Role |
 |---|---|---|
 | **v1** | [`perry-system`](https://github.com/Perry5216/perry-system) | First public platform. Coordinator + worker pool + learning loop. Still the historical source. |
-| **v2** | **this repo** | Rebuild as a typed monorepo, GPU fabric, fail-closed fleet. What I run today. |
+| **v2** | **this repo** ([`perry`](https://github.com/Perry5216/perry)) | Public map of the rebuild: typed monorepo, GPU fabric, fail-closed fleet. What I run today. |
 | **v3** | in design | Same products. New agent kernel (session log + plugins) so the system is reliable enough to keep growing. |
 
 I am a London-based developer (CS + cybersecurity). I build the stack, the orchestration, the dashboard, the GPU routing, and the learning loop — not a wrapper around one API.
