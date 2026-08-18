@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.sample
+**/.vault/
+**/workspace/
+**/node_modules/
+**/dist/
+**/*.enc
+**/*.pem
+**/*.key
+.DS_Store
+Thumbs.db

@@ -1,0 +1,12 @@
+Copyright (c) 2026 Anthony Perry
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this documentation and associated files in this repository, to read, copy,
+and share them for personal, educational, and hiring evaluation purposes,
+provided that this notice is included.
+
+The live Perry v2/v3 application source, operator data, model weights, and
+secrets are not included and are not licensed by this file.
+
+The v1 codebase remains under the license published in:
+https://github.com/Perry5216/perry-system
