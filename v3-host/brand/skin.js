@@ -24,11 +24,15 @@
 
   const cleanHero = (root = document) => {
     root.querySelectorAll?.('svg[viewBox="0 0 23.16 17.04"]').forEach((svg) => {
-      const box = svg.closest('[class*="_fishHitbox"]') || svg;
-      box.style.display = "none";
+      const row = svg.closest('[class*="_headline"]');
+      if (row) row.style.display = "none";
+      else (svg.closest('[class*="_fishHitbox"]') || svg).style.display = "none";
     });
-    root.querySelectorAll?.('[class*="_previewBadge"], [class*="_headlineText"], [class*="_headline"]').forEach((el) => {
-      el.style.display = "none";
+    root.querySelectorAll?.('[class*="_headlineText"]').forEach((el) => {
+      if ((el.textContent || "").trim() === "Into the Unknown") {
+        const row = el.closest('[class*="_headline"]');
+        if (row) row.style.display = "none";
+      }
     });
   };
 

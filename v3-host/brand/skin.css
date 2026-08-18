@@ -6,12 +6,9 @@ svg[data-perry-wordmark] {
   overflow: visible;
 }
 
-/* Empty workspace: drop shark + "Into the Unknown" + Preview pill */
+/* Empty workspace hero only — do not use bare _headline (settings uses similar names). */
 [class*="_fishHitbox"],
-[class*="_fish"],
-svg[viewBox="0 0 23.16 17.04"],
 [class*="_previewBadge"],
-[class*="_headlineText"],
-[class*="_headline"] {
+svg[viewBox="0 0 23.16 17.04"] {
   display: none !important;
 }
