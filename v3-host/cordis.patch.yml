@@ -1,0 +1,19 @@
+# Perry overlay: enable coding tools. Does not edit @deepseek-ai packages.
+# web-app disables these; this layer sits above and turns them back on.
+# Live copy: $DSH_HOME/profiles/web/cordis.patch.yml
+- id: tool-fs
+  disabled: false
+- id: tool-fs-search
+  disabled: false
+- id: tool-str-replace-editor
+  disabled: false
+- id: tool-bash
+  disabled: false
+- id: agent-instructions
+  disabled: false
+- id: skill-filesystem
+  disabled: false
+- id: tool-skill
+  disabled: false
+- id: skill-badge
+  disabled: false
