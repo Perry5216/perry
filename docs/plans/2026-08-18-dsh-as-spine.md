@@ -4,26 +4,30 @@
 
 **Goal:** Run Perry v3 on an *unmodified* DeepSeek Harness (`dsh`) so a newer harness is a version bump plus our tests, not a merge. Lean into plugins. Do not keep the v2 fleet alive.
 
-**Architecture:** `dsh` is the process (session log, agent loop, plugin loader). Perry is **only** `@perry/*` plugins + profiles stacked on `dsh-base`. The **only** v2 product that stays in production is the teaching app (`https://teach.5216perry.uk`, compose `gcse-tutor` at `/home/anthony/TUTOR-2ND-PC`). Dashboard `:4847`, books, board, and the rest of the fleet are not a live requirement. Rebuild what we still want as plugins.
+**Architecture:** `dsh` is the process (session log, agent loop, plugin loader). Perry is **only** `@perry/*` plugins + profiles stacked on `dsh-base`. The teaching app is the **only** live v2 product (`https://teach.5216perry.uk`, kids on it now). It **will** become `perry-tutor` (a plugin + the same student UI), but **not** by taking the live URL down. Dual-run until parity, then flip the tunnel. Dashboard `:4847` and the rest of the fleet are not live requirements.
 
 **Tech stack:** Node ≥ 22, pnpm, `@deepseek-ai/dsh` (exact pin), TypeScript ESM. Tutor stays its own Docker/cloudflared stack. GPUs stay endpoints the fleet plugin talks to.
 
-## Live freeze (v2)
+## Live freeze (teaching app — kids)
 
-| Keep running | Do not treat as live |
+`teach.5216perry.uk` stays the production URL until a written cutover. Kids keep hitting `gcse-tutor` on `:8123` the whole time.
+
+| Now | Later (only after parity) |
 |---|---|
-| `gcse-tutor` → `teach.5216perry.uk` (cloudflared → :8123) | Perry dashboard `:4847` as daily driver |
-| Tutor working copy: `TUTOR-2ND-PC` + `tutor-fix` / `game-projects/tutor` | Book engine, board, autopilot, harvest cron as production |
-| Tutor DB and tunnel | “v2 must keep doing everything” |
+| Compose `/home/anthony/TUTOR-2ND-PC`, container `gcse-tutor` | Same hostname, tunnel pointed at the plugin-backed process |
+| DB `tutor.db` is canonical | Plugin uses that DB (or a replica) — no fresh empty SQLite |
+| LLM path in `tutor-fix` / `TUTOR-2ND-PC` unchanged | Optional: tutor calls `perry-llm-fleet` instead of its own `llm.js` |
 
-Tutor already has its own compose. Do not fold it into Cordis in v3.0. If it needs a model, it keeps its current LLM path until a later `perry-tutor` consumer is an explicit task.
+**Cutover rule:** dual-run. `gcse-tutor` stays on the public host. `perry-tutor` boots on another port, we dogfood (and one kid session on a staging host if needed), compare session + skill_state, then flip cloudflared. Instant rollback = point the tunnel back at `:8123`.
+
+Do not “rewrite tutor inside Cordis” as the first plugin. First plugin is a **wrapper**: register tools / LLM seat, leave `server.js` + `db.js` + the student SPA as the product. Rebuild the lesson engine only if the wrapper is boring and the kids never noticed a blip.
 
 ## Global constraints
 
 - **Harness is read-only.** No forks, no `vendor/` edits, no patches to `agent-loop`, Cordis, or `dsh-base` source. Overlay only.
 - **Swap path must stay one command:** bump the pinned version → install → `dsh --dump-config` → `perry-minimal` evals → fix *our* plugins if their public events/APIs moved.
 - **Do not override v1** (`perry-system`) or force-push private `Perry-v2`.
-- **Do not take down the teaching app** while rebuilding.
+- **Kids first.** Do not take down or schema-break `teach.5216perry.uk` while rebuilding. Tutor *may* become a plugin; production does not move until dual-run parity.
 - **Plugin-first:** new capability = a Cordis plugin. No second `PerryRuntime`.
 - **Fail-closed** on outward tools.
 - **Linux `analysis` is the studio host.** This Windows box stays GPU + MCP lab providers.
@@ -202,14 +206,14 @@ Each is the same shape as Task 4: **HTTP/client to existing v2 sidecar**, log vi
 
 ---
 
-### Task 7: Freeze tutor; do not keep the v2 fleet as a product
+### Task 7: Keep kids on `gcse-tutor`; plugin is dual-run later
 
-**Files:** none in dsh. Tutor compose stays at `/home/anthony/TUTOR-2ND-PC`.
+**Files:** none in dsh for Plan A. Later: `packages/perry-tutor` wraps existing `server.js` / `db.js`, does not replace them on day one.
 
-- [ ] Confirm `https://teach.5216perry.uk/health` (or `/`) still up after any analysis reboots.
-- [ ] Do not bind v3 boot to `compose.v2.yaml` perry-v2 service being healthy.
-- [ ] Books, dashboard, harvest, board are **rebuild-as-plugin** later, not live gates.
-- [ ] Do not port the tutor into Cordis in this plan.
+- [ ] Confirm `https://teach.5216perry.uk` still up after any analysis reboots. That URL does not change in Plan A–B.
+- [ ] Do not bind v3 boot to `compose.v2.yaml` perry-v2 (dashboard) being healthy.
+- [ ] Books, dashboard, harvest, board are rebuild-as-plugin if we want them — not live gates.
+- [ ] `perry-tutor` is an explicit later task: wrap the live app, share `tutor.db`, listen on a side port, flip cloudflared only after parity. Rollback = tunnel back to `:8123`.
 
 ---
 
@@ -268,4 +272,4 @@ If upstream is missing a seam we need, we: (1) file it against dsh, (2) keep a *
 
 Net/research/browser/learn after the canary is real, and only if we still want those capabilities — as plugins, not as a reason to keep v2 up.
 
-Tutor is out of scope for the rebuild. It stays the one live v2 app.
+Tutor stays the one live app. It becomes a plugin only via dual-run + tunnel flip, after the spine canary is real. Kids never sit on an unproven port.
