@@ -1,0 +1,42 @@
+# Stock DeepSeek Harness on analysis:4847.
+# Does not touch gcse-tutor (:8123). Do not edit @deepseek-ai source.
+services:
+  dsh:
+    image: node:22-bookworm
+    container_name: perry-dsh
+    network_mode: host
+    working_dir: /workspace
+    environment:
+      DSH_HOME: /data/dsh-home
+      NPM_CONFIG_UPDATE_NOTIFIER: "false"
+      npm_config_yes: "true"
+    volumes:
+      - ./data/dsh-home:/data/dsh-home
+      - ./data/npm:/root/.npm
+      - ./workspace:/workspace
+    command:
+      - bash
+      - -lc
+      - |
+        set -euo pipefail
+        npx --yes @deepseek-ai/dsh web \
+          --port 3080 \
+          --trusted-host analysis \
+          --trusted-host analysis:4847 \
+          --trusted-host 192.168.1.183 \
+          --trusted-host 192.168.1.183:4847 \
+          --trusted-host 100.113.226.28 \
+          --trusted-host 100.113.226.28:4847 \
+          --trusted-host localhost:4847 \
+          --trusted-host 127.0.0.1:4847
+    restart: unless-stopped
+
+  dsh-proxy:
+    image: caddy:2-alpine
+    container_name: perry-dsh-proxy
+    network_mode: host
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - dsh
+    restart: unless-stopped
