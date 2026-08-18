@@ -1,0 +1,5 @@
+/* Perry skin — overlay only. Does not patch @deepseek-ai packages. */
+html { color-scheme: dark; }
+#root [data-perry-wordmark] {
+  letter-spacing: -0.03em;
+}

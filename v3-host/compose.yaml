@@ -32,11 +32,12 @@ services:
     restart: unless-stopped
 
   dsh-proxy:
-    image: caddy:2-alpine
+    image: nginx:1.27-alpine
     container_name: perry-dsh-proxy
     network_mode: host
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./nginx.conf:/etc/nginx/conf.d/perry.conf:ro
+      - ./brand:/brand:ro
     depends_on:
       - dsh
     restart: unless-stopped

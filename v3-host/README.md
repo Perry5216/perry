@@ -1,6 +1,7 @@
 # Perry v3 host (stock DeepSeek Harness)
 
-Serves unmodified `dsh` at `http://analysis:4847/` via Caddy → `127.0.0.1:3080`.
+Serves unmodified `dsh` at `http://analysis:4847/` via nginx → `127.0.0.1:3080`.
+Perry title, favicon, and sidebar wordmark are an overlay in `brand/` — the harness package is not edited.
 
 Teaching app stays on `:8123`. Do not `docker stop gcse-tutor`.
 
