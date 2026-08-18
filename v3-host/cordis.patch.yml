@@ -17,3 +17,7 @@
   disabled: false
 - id: skill-badge
   disabled: false
+- id: agent-default-model
+  config:
+    provider: spark2
+    model: qwen2.5:7b

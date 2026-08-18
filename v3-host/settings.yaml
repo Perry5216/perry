@@ -1,0 +1,75 @@
+# User settings for stock dsh. Merges with composition; not a harness fork.
+# Seats follow Perry v2: spark/door/brain + the grok shim on analysis.
+
+llm-pi-ai:
+  providers:
+    grok:
+      displayName: Grok (analysis shim)
+      api: openai-completions
+      baseURL: http://127.0.0.1:8088/v1
+      apiKeyEnv: GROK_API_KEY
+      models:
+        - id: grok-build
+          name: grok-build
+          contextWindow: 131072
+          maxTokens: 8192
+        - id: grok-composer-2.5-fast
+          name: grok-composer-2.5-fast
+          contextWindow: 131072
+          maxTokens: 8192
+    spark2:
+      displayName: Spark2 Ollama (192.168.1.146)
+      api: openai-completions
+      baseURL: http://192.168.1.146:11434/v1
+      apiKeyEnv: OLLAMA_API_KEY
+      models:
+        - id: qwen2.5:7b
+          name: qwen2.5:7b
+          contextWindow: 32768
+          maxTokens: 4096
+        - id: qwen2.5:32k
+          name: qwen2.5:32k
+          contextWindow: 32768
+          maxTokens: 4096
+        - id: qwen2.5:150k
+          name: qwen2.5:150k
+          contextWindow: 32768
+          maxTokens: 4096
+    spark:
+      displayName: Spark DeepSeek ds4 (192.168.1.139)
+      api: openai-completions
+      baseURL: http://192.168.1.139:8000/v1
+      apiKeyEnv: OLLAMA_API_KEY
+      models:
+        - id: deepseek-v4-flash
+          name: deepseek-v4-flash
+          contextWindow: 65536
+          maxTokens: 8192
+    door:
+      displayName: Door 5070 (Ollama)
+      api: openai-completions
+      baseURL: http://192.168.1.139:11434/v1
+      apiKeyEnv: OLLAMA_API_KEY
+      models:
+        - id: gemma4-12b-ablit:q4km
+          name: gemma4-12b-ablit:q4km
+          contextWindow: 32768
+          maxTokens: 4096
+        - id: deepseek-v4-flash
+          name: deepseek-v4-flash
+          contextWindow: 32768
+          maxTokens: 4096
+    brain:
+      displayName: Brain 5090 (Windows Ollama)
+      api: openai-completions
+      baseURL: http://100.114.80.127:11434/v1
+      apiKeyEnv: OLLAMA_API_KEY
+      models:
+        - id: qwen3.8:27b
+          name: qwen3.8:27b
+          contextWindow: 32768
+          maxTokens: 4096
+
+agent-default-model:
+  provider: spark2
+  model: qwen2.5:7b
