@@ -1,5 +1,17 @@
 /* Perry skin — overlay only. Does not patch @deepseek-ai packages. */
-html { color-scheme: dark; }
-#root [data-perry-wordmark] {
-  letter-spacing: -0.03em;
+
+/* Sidebar wordmark sits on the brand button */
+svg[data-perry-wordmark] {
+  display: block;
+  overflow: visible;
+}
+
+/* Empty workspace: drop shark + "Into the Unknown" + Preview pill */
+[class*="_fishHitbox"],
+[class*="_fish"],
+svg[viewBox="0 0 23.16 17.04"],
+[class*="_previewBadge"],
+[class*="_headlineText"],
+[class*="_headline"] {
+  display: none !important;
 }
