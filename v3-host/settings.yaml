@@ -18,9 +18,9 @@ llm-pi-ai:
           contextWindow: 131072
           maxTokens: 8192
     spark2:
-      displayName: Spark2 Ollama (192.168.1.146)
+      displayName: Spark2 (NVIDIA Sync tunnel :11002)
       api: openai-completions
-      baseURL: http://192.168.1.146:11434/v1
+      baseURL: http://127.0.0.1:11002/v1
       apiKeyEnv: OLLAMA_API_KEY
       models:
         - id: qwen2.5:7b
@@ -35,8 +35,18 @@ llm-pi-ai:
           name: qwen2.5:150k
           contextWindow: 32768
           maxTokens: 4096
+    spark1:
+      displayName: Spark1 (NVIDIA Sync tunnel :11001)
+      api: openai-completions
+      baseURL: http://127.0.0.1:11001/v1
+      apiKeyEnv: OLLAMA_API_KEY
+      models:
+        - id: bge-m3:latest
+          name: bge-m3:latest
+          contextWindow: 8192
+          maxTokens: 512
     spark:
-      displayName: Spark DeepSeek ds4 (192.168.1.139)
+      displayName: Spark1 DeepSeek ds4 (when vLLM :8000 is up)
       api: openai-completions
       baseURL: http://192.168.1.139:8000/v1
       apiKeyEnv: OLLAMA_API_KEY
@@ -48,7 +58,7 @@ llm-pi-ai:
     door:
       displayName: Door 5070 (Ollama)
       api: openai-completions
-      baseURL: http://192.168.1.139:11434/v1
+      baseURL: http://127.0.0.1:11001/v1
       apiKeyEnv: OLLAMA_API_KEY
       models:
         - id: gemma4-12b-ablit:q4km
