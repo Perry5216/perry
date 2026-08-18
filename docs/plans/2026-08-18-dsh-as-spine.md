@@ -2,19 +2,30 @@
 
 > **For agentic workers:** Implement task-by-task. Do not edit files under the harness checkout or `node_modules/@deepseek-ai/**`. If a change seems to require a harness patch, stop and add a Perry plugin or a profile overlay instead.
 
-**Goal:** Run Perry v3 on an *unmodified* DeepSeek Harness (`dsh`) so a newer harness is a version bump plus our tests, not a merge.
+**Goal:** Run Perry v3 on an *unmodified* DeepSeek Harness (`dsh`) so a newer harness is a version bump plus our tests, not a merge. Lean into plugins. Do not keep the v2 fleet alive.
 
-**Architecture:** `dsh` is the process (session log, agent loop, plugin loader). Perry is a **bundle** (`perry-base`) and **profiles** stacked *on top* of `dsh-base` via `cordis.yml` / `cordis.patch.yml`. VPN, research, books, harvest, dashboard, GPU steward stay **sidecars**. Thin Perry plugins call those sidecars and write session events.
+**Architecture:** `dsh` is the process (session log, agent loop, plugin loader). Perry is **only** `@perry/*` plugins + profiles stacked on `dsh-base`. The **only** v2 product that stays in production is the teaching app (`https://teach.5216perry.uk`, compose `gcse-tutor` at `/home/anthony/TUTOR-2ND-PC`). Dashboard `:4847`, books, board, and the rest of the fleet are not a live requirement. Rebuild what we still want as plugins.
 
-**Tech stack:** Node ≥ 22, pnpm, `@deepseek-ai/dsh` (exact pin), TypeScript ESM, existing v2 HTTP sidecars on `:4847` / gluetun / LDR / `perry-browser:3848`.
+**Tech stack:** Node ≥ 22, pnpm, `@deepseek-ai/dsh` (exact pin), TypeScript ESM. Tutor stays its own Docker/cloudflared stack. GPUs stay endpoints the fleet plugin talks to.
+
+## Live freeze (v2)
+
+| Keep running | Do not treat as live |
+|---|---|
+| `gcse-tutor` → `teach.5216perry.uk` (cloudflared → :8123) | Perry dashboard `:4847` as daily driver |
+| Tutor working copy: `TUTOR-2ND-PC` + `tutor-fix` / `game-projects/tutor` | Book engine, board, autopilot, harvest cron as production |
+| Tutor DB and tunnel | “v2 must keep doing everything” |
+
+Tutor already has its own compose. Do not fold it into Cordis in v3.0. If it needs a model, it keeps its current LLM path until a later `perry-tutor` consumer is an explicit task.
 
 ## Global constraints
 
 - **Harness is read-only.** No forks, no `vendor/` edits, no patches to `agent-loop`, Cordis, or `dsh-base` source. Overlay only.
 - **Swap path must stay one command:** bump the pinned version → install → `dsh --dump-config` → `perry-minimal` evals → fix *our* plugins if their public events/APIs moved.
 - **Do not override v1** (`perry-system`) or force-push private `Perry-v2`.
-- **Full v2 surface stays:** VPN, local deep research, books, email parks, board, harvest/learning, browser, fleet seats, lab MCP as providers or sidecars.
-- **Fail-closed** on outward actions and on a harvest that scanned nothing.
+- **Do not take down the teaching app** while rebuilding.
+- **Plugin-first:** new capability = a Cordis plugin. No second `PerryRuntime`.
+- **Fail-closed** on outward tools.
 - **Linux `analysis` is the studio host.** This Windows box stays GPU + MCP lab providers.
 - **No runtime self-modification of the kernel** on the lab box.
 
@@ -191,13 +202,14 @@ Each is the same shape as Task 4: **HTTP/client to existing v2 sidecar**, log vi
 
 ---
 
-### Task 7: v2 keeps serving products
+### Task 7: Freeze tutor; do not keep the v2 fleet as a product
 
-**Files:** none in dsh. Compose and `:4847` stay.
+**Files:** none in dsh. Tutor compose stays at `/home/anthony/TUTOR-2ND-PC`.
 
-- [ ] Book engine, dashboard, cron, email, vault, GPU steward unchanged.
-- [ ] Headless tickets that need an agent call `perry --profile perry-headless` (child process), then read **dsh session** for the transcript.
-- [ ] Do not port books into Cordis.
+- [ ] Confirm `https://teach.5216perry.uk/health` (or `/`) still up after any analysis reboots.
+- [ ] Do not bind v3 boot to `compose.v2.yaml` perry-v2 service being healthy.
+- [ ] Books, dashboard, harvest, board are **rebuild-as-plugin** later, not live gates.
+- [ ] Do not port the tutor into Cordis in this plan.
 
 ---
 
@@ -239,7 +251,7 @@ If upstream is missing a seam we need, we: (1) file it against dsh, (2) keep a *
 2. `check-dsh-clean` is green.
 3. Approval + one fleet adapter + one sidecar plugin work as overlays.
 4. `upgrade-dsh.mjs` can move pin → smoke without a source merge.
-5. v2 `:4847` still serves books/VPN/research.
+5. `teach.5216perry.uk` still up. v2 fleet is not a live gate.
 6. `perry-system` and private `Perry-v2` git history unchanged.
 
 ---
@@ -254,4 +266,6 @@ If upstream is missing a seam we need, we: (1) file it against dsh, (2) keep a *
 | 4 | Task 5: one seat (Spark) then Door/Brain |
 | 5 | Task 8: upgrade script dry-run against current version (no-op bump) |
 
-Net/research/browser/learn after the canary is real. Those are how v2 *products* attach, not how the spine is proven.
+Net/research/browser/learn after the canary is real, and only if we still want those capabilities — as plugins, not as a reason to keep v2 up.
+
+Tutor is out of scope for the rebuild. It stays the one live v2 app.
